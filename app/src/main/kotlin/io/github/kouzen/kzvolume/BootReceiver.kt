@@ -1,0 +1,25 @@
+package io.github.kouzen.kzvolume
+
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import io.github.kouzen.kzvolume.core.feature.FeatureRegistry
+import io.github.kouzen.kzvolume.core.preferences.AppPreferences
+
+class BootReceiver : BroadcastReceiver() {
+
+    override fun onReceive(context: Context, intent: Intent) {
+        val action = intent.action ?: return
+        if (action != Intent.ACTION_BOOT_COMPLETED && action != Constants.QUICKBOOT_POWER_ON_ACTION) {
+            return
+        }
+
+        AppPreferences.ensureMigration(context)
+
+        FeatureRegistry.all().forEach { controller ->
+            runCatching {
+                controller.synchronize(context)
+            }
+        }
+    }
+}

@@ -1,0 +1,39 @@
+<resources>
+    <!-- Brand Cyan / Teal Accents -->
+    <color name="colorPrimary">#06B6D4</color>
+    <color name="colorAccent">#22D3EE</color>
+    <color name="colorPrimaryContainer">#102230</color>
+    <color name="colorOnPrimaryContainer">#CFFAFE</color>
+
+    <!-- Deep obsidian surfaces matching kzkt -->
+    <color name="colorBackground">#0B0D13</color>
+    <color name="colorSurface">#131620</color>
+    <color name="colorSurfaceContainerLow">#131620</color>
+    <color name="colorCardBg">#141722</color>
+    <color name="colorCardStroke">#1F2433</color>
+    <color name="colorSurfaceVariant">#1C2230</color>
+
+    <!-- Typography colors -->
+    <color name="colorTextPrimary">#F8FAFC</color>
+    <color name="colorTextSecondary">#94A3B8</color>
+    <color name="colorTextMuted">#64748B</color>
+    <color name="colorSectionTitle">#7287A5</color>
+
+    <!-- Semantic & Notice colors -->
+    <color name="colorWarning">#F59E0B</color>
+    <color name="colorWarningSurface">#211A10</color>
+    <color name="colorNoticeWarningBg">#281907</color>
+    <color name="colorNoticeWarningBorder">#784405</color>
+    <color name="colorNoticeWarningText">#FDE68A</color>
+
+    <color name="colorSuccess">#10B981</color>
+    <color name="colorDisabledSurface">#14151D</color>
+
+    <!-- Icon box background -->
+    <color name="colorIconBoxBg">#1A212E</color>
+    <color name="colorIconTint">#7FA3C9</color>
+
+    <color name="edgeInactive">#1E2433</color>
+    <color name="edgeActive">#22D3EE</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>

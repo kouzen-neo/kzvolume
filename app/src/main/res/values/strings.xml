@@ -1,0 +1,109 @@
+<resources>
+    <string name="app_name">kzvolume</string>
+
+    <string name="home_title">kzvolume</string>
+    <string name="home_subtitle">On-screen volume control hub</string>
+    <string name="home_section_features">CONTROL METHODS</string>
+    <string name="section_volume">Volume</string>
+    <string name="section_gestures">Gestures &amp; Controls</string>
+    <string name="section_preferences">Preferences</string>
+
+    <string name="home_media_volume">Media Volume</string>
+
+    <!-- Feature titles & subtitles -->
+    <string name="feature_floating_title">Floating Button</string>
+    <string name="feature_floating_subtitle">On-screen movable volume button</string>
+    <string name="feature_floating_description">On-screen movable volume button</string>
+
+    <string name="feature_edge_title">Edge Swipe</string>
+    <string name="feature_edge_subtitle">Swipe inward from screen edge</string>
+    <string name="feature_edge_description">Swipe inward from screen edge</string>
+    <string name="feature_edge_blocked">Requires 3-button navigation (tap to fix)</string>
+
+    <string name="feature_quick_tile_title">Quick Settings Tile</string>
+    <string name="feature_quick_tile_subtitle">System volume panel in notification shade</string>
+    <string name="feature_quick_tile_description">System volume panel in notification shade</string>
+
+    <string name="feature_config_button">Configure</string>
+    <string name="feature_blocked_gesture_nav">Not available with gesture navigation. Switch to button navigation in Settings > Gestures > Navigation mode.</string>
+
+    <!-- Preference items -->
+    <string name="pref_floating_style">Floating Button Style</string>
+    <string name="pref_floating_style_desc">Icon, size, color and opacity</string>
+    <string name="pref_edge_side">Active Screen Edge</string>
+    <string name="pref_haptic">Haptic Feedback</string>
+    <string name="pref_haptic_desc">Vibrate on touch and gestures</string>
+
+    <!-- Edge selector -->
+    <string name="edge_selector_title">Active Edge</string>
+    <string name="edge_selector_body">Select which edge should trigger the volume panel.</string>
+    <string name="edge_selector_save_button">Save Edge</string>
+    <string name="edge_side_left">Left edge</string>
+    <string name="edge_side_right">Right edge</string>
+
+    <string name="quick_tile_label">Volume Panel</string>
+
+    <!-- App info / About dialog -->
+    <string name="app_info_title">About kzvolume</string>
+    <string name="app_info_what_does_it_do">kzvolume provides instant on-screen volume controls via floating button, edge swipe gestures, and quick settings tiles for devices with broken hardware buttons.</string>
+
+    <!-- Floating button config screen -->
+    <string name="floating_config_title">Floating Button Style</string>
+    <string name="floating_config_subtitle">Customize icon, size, color and behavior.</string>
+    <string name="floating_config_choose_icon">Choose Icon</string>
+    <string name="floating_config_choose_color">Choose Color</string>
+    <string name="floating_config_color_default">Default</string>
+    <string name="floating_config_pick_color">Pick Color</string>
+    <string name="floating_config_hex_color_hint">Hex color (e.g. #FF0000)</string>
+    <string name="floating_config_invalid_hex">Invalid hex color</string>
+    <string name="floating_config_save">Save Configuration</string>
+    <string name="floating_config_saved">Configuration saved</string>
+    <string name="floating_config_more">More Icons</string>
+    <string name="floating_config_opacity">Opacity</string>
+    <string name="floating_config_size">Button Size (%1$ddp)</string>
+
+    <string name="floating_config_haptic">Haptic Feedback</string>
+    <string name="floating_config_haptic_desc">Vibrate on taps and gesture actions.</string>
+
+    <string name="floating_config_fixed_position">Fixed Position</string>
+    <string name="floating_config_fixed_position_desc">Lock the button to prevent accidental movement.</string>
+
+    <string name="floating_config_separate_positions">Separate Orientations</string>
+    <string name="floating_config_separate_positions_desc">Save different positions for portrait and landscape.</string>
+
+    <!-- Notification -->
+    <string name="notification_channel_name">kzvolume edge swipe service</string>
+    <string name="notification_channel_description">Keeps edge swipe detection active</string>
+    <string name="notification_title">Edge Swipe Overlay is active</string>
+    <string name="notification_text">Swipe inward from your selected edge to open volume controls.</string>
+
+    <string name="notification_channel_name_floating">kzvolume floating button service</string>
+    <string name="notification_channel_description_floating">Keeps floating button active</string>
+    <string name="notification_title_floating">Floating Button is active</string>
+    <string name="notification_text_floating">Tap the floating button to open volume controls. Drag to move it.</string>
+
+    <string name="notification_stop_action">Stop</string>
+    <string name="notification_volume_down">Vol -</string>
+    <string name="notification_volume_mute">Mute</string>
+    <string name="notification_volume_up">Vol +</string>
+
+    <!-- Permissions -->
+    <string name="permission_overlay_title">Draw over other apps</string>
+    <string name="permission_overlay_explanation">Required to display overlays above other apps.</string>
+    <string name="permission_notifications_title">Notifications</string>
+    <string name="permission_notifications_explanation">Required to keep the background service alive on Android 13+.</string>
+    <string name="permission_settings_hint">Android is no longer showing the prompt. Open app settings and allow notifications manually.</string>
+    <string name="permission_grant_button">Grant</string>
+    <string name="permission_continue_button">Continue</string>
+    <string name="permission_screen_title_with_feature">Permissions for %1$s</string>
+    <string name="permission_screen_subtitle">Grant required permissions to enable this feature.</string>
+    <string name="permission_blocked_reason_label">Feature Unavailable</string>
+    <string name="permission_not_required">Not required on this Android version</string>
+    <string name="permission_status_granted">Granted</string>
+    <string name="permission_status_pending">Pending</string>
+    <string name="permission_open_settings_button">Open Settings</string>
+    <string name="content_description_status_indicator">Permission status indicator</string>
+    <string name="content_description_overlay_icon">Draw-over-apps icon</string>
+    <string name="content_description_notifications_icon">Notifications icon</string>
+    <string name="feature_action_failed">Action failed. Please try again.</string>
+</resources>

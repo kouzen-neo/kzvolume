@@ -1,0 +1,287 @@
+package io.github.kouzen.kzvolume.features.floating
+
+import android.graphics.Color
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.GridLayout
+import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.doAfterTextChanged
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import io.github.kouzen.kzvolume.R
+import io.github.kouzen.kzvolume.core.preferences.AppPreferences
+import io.github.kouzen.kzvolume.databinding.ActivityFloatingButtonConfigBinding
+import kotlinx.coroutines.launch
+import java.util.Locale
+
+import androidx.recyclerview.widget.GridLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import io.github.kouzen.kzvolume.databinding.LayoutIconPickerSheetBinding
+
+class FloatingButtonConfigActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityFloatingButtonConfigBinding
+    private var selectedIconName: String = ""
+    private var selectedColor: Int = 0
+    private var selectedOpacity: Float = 1.0f
+    private var selectedSizeDp: Int = 48
+    private var isFixedPosition: Boolean = false
+    private var isSeparatePositions: Boolean = false
+    private var isHapticEnabled: Boolean = true
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityFloatingButtonConfigBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+
+        selectedIconName = AppPreferences.getFloatingIconName(this)
+        selectedColor = AppPreferences.getFloatingIconColor(this)
+        selectedOpacity = AppPreferences.getFloatingOpacity(this)
+        selectedSizeDp = AppPreferences.getFloatingSizeDp(this)
+        isFixedPosition = AppPreferences.isFloatingFixedPosition(this)
+        isSeparatePositions = AppPreferences.isFloatingSeparatePositionsEnabled(this)
+        isHapticEnabled = AppPreferences.isHapticEnabled(this)
+
+        setupUI()
+        updatePreview()
+    }
+
+    private fun setupUI() {
+        refreshIconList()
+
+        binding.opacitySlider.value = selectedOpacity
+        binding.opacitySlider.addOnChangeListener { _, value, _ ->
+            selectedOpacity = value
+            updatePreview()
+        }
+
+        binding.sizeSlider.value = selectedSizeDp.toFloat()
+        binding.sizeLabel.text = getString(R.string.floating_config_size, selectedSizeDp)
+        binding.sizeSlider.addOnChangeListener { _, value, _ ->
+            selectedSizeDp = value.toInt()
+            binding.sizeLabel.text = getString(R.string.floating_config_size, selectedSizeDp)
+            updatePreview()
+        }
+
+        binding.hapticFeedbackSwitch.isChecked = isHapticEnabled
+        binding.hapticFeedbackSwitch.setOnCheckedChangeListener { _, isChecked ->
+            isHapticEnabled = isChecked
+        }
+
+        binding.fixedPositionSwitch.isChecked = isFixedPosition
+        binding.fixedPositionSwitch.setOnCheckedChangeListener { _, isChecked ->
+            isFixedPosition = isChecked
+        }
+
+        binding.separatePositionsSwitch.isChecked = isSeparatePositions
+        binding.separatePositionsSwitch.setOnCheckedChangeListener { _, isChecked ->
+            isSeparatePositions = isChecked
+        }
+
+        binding.colorDefaultButton.setOnClickListener {
+            selectedColor = 0
+            binding.hexColorInput.setText("")
+            updatePreview()
+        }
+
+        binding.pickColorButton.setOnClickListener {
+            showColorPickerDialog()
+        }
+
+        binding.hexColorInput.doAfterTextChanged { s ->
+            val hex = s.toString()
+            if (hex.isEmpty()) return@doAfterTextChanged
+            
+            runCatching {
+                val color = Color.parseColor(if (hex.startsWith("#")) hex else "#$hex")
+                selectedColor = color
+                binding.hexColorInputLayout.error = null
+                updatePreview()
+            }.onFailure {
+                binding.hexColorInputLayout.error = getString(R.string.floating_config_invalid_hex)
+            }
+        }
+
+        if (selectedColor != 0) {
+            binding.hexColorInput.setText(String.format(Locale.US, "#%06X", 0xFFFFFF and selectedColor))
+        }
+
+        binding.saveConfigButton.setOnClickListener {
+            AppPreferences.setFloatingIconName(this, selectedIconName)
+            AppPreferences.setFloatingIconColor(this, selectedColor)
+            AppPreferences.setFloatingOpacity(this, selectedOpacity)
+            AppPreferences.setFloatingSizeDp(this, selectedSizeDp)
+            AppPreferences.setHapticEnabled(this, isHapticEnabled)
+            AppPreferences.setFloatingFixedPosition(this, isFixedPosition)
+            AppPreferences.setFloatingSeparatePositionsEnabled(this, isSeparatePositions)
+            
+            // Restart feature if enabled
+            if (AppPreferences.isFloatingEnabled(this)) {
+                lifecycleScope.launch {
+                    FloatingButtonRuntime.sync(this@FloatingButtonConfigActivity)
+                }
+            }
+            
+            Toast.makeText(this, R.string.floating_config_saved, Toast.LENGTH_SHORT).show()
+            finish()
+        }
+    }
+
+    private fun refreshIconList() {
+        val displayIcons = OverlayIconRegistry.allIcons.take(3) + OverlayIconRegistry.getMoreIcon()
+
+        binding.iconRecyclerView.adapter = IconAdapter(displayIcons, false) { icon ->
+            if (icon.name == OverlayIconRegistry.getMoreIcon().name) {
+                showIconPickerSheet()
+            } else {
+                selectedIconName = icon.name
+                updatePreview()
+            }
+        }
+    }
+
+    private fun showIconPickerSheet() {
+        val dialog = BottomSheetDialog(this)
+        val sheetBinding = LayoutIconPickerSheetBinding.inflate(layoutInflater)
+        dialog.setContentView(sheetBinding.root)
+
+        sheetBinding.sheetIconRecyclerView.apply {
+            layoutManager = GridLayoutManager(this@FloatingButtonConfigActivity, 3)
+            adapter = IconAdapter(OverlayIconRegistry.allIcons, true) { icon ->
+                selectedIconName = icon.name
+                updatePreview()
+                dialog.dismiss()
+            }
+        }
+
+        dialog.show()
+    }
+
+    private fun updatePreview() {
+        val icon = OverlayIconRegistry.getIconByName(selectedIconName)
+        
+        binding.iconPreview.setImageResource(icon.resId)
+        binding.iconPreview.alpha = selectedOpacity
+        
+        val previewPx = dpToPx(selectedSizeDp)
+        binding.iconPreview.layoutParams = binding.iconPreview.layoutParams.apply {
+            width = previewPx
+            height = previewPx
+        }
+        
+        val tintColor = if (selectedColor == 0) {
+            getColor(R.color.colorPrimary)
+        } else {
+            selectedColor
+        }
+        binding.iconPreview.setColorFilter(tintColor)
+        binding.currentColorDisplay.backgroundTintList = android.content.res.ColorStateList.valueOf(tintColor)
+    }
+
+    private fun showColorPickerDialog() {
+        val colors = intArrayOf(
+            Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.CYAN, Color.MAGENTA,
+            Color.BLACK, Color.WHITE, Color.GRAY, Color.parseColor("#FF5722"), 
+            Color.parseColor("#4CAF50"), Color.parseColor("#2196F3")
+        )
+
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_color_picker, null)
+        val grid = dialogView.findViewById<GridLayout>(R.id.colorGrid) ?: return
+        
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.floating_config_choose_color)
+            .setView(dialogView)
+            .create()
+
+        colors.forEach { color ->
+            val colorView = View(this).apply {
+                layoutParams = GridLayout.LayoutParams().apply {
+                    width = dpToPx(48)
+                    height = dpToPx(48)
+                    setMargins(dpToPx(8), dpToPx(8), dpToPx(8), dpToPx(8))
+                }
+                setBackgroundResource(R.drawable.bg_status_dot)
+                backgroundTintList = android.content.res.ColorStateList.valueOf(color)
+                setOnClickListener {
+                    selectedColor = color
+                    binding.hexColorInput.setText(String.format(Locale.US, "#%06X", 0xFFFFFF and color))
+                    updatePreview()
+                    dialog.dismiss()
+                }
+            }
+            grid.addView(colorView)
+        }
+        dialog.show()
+    }
+
+    private fun dpToPx(dp: Int): Int {
+        return (dp * resources.displayMetrics.density).toInt()
+    }
+
+    inner class IconAdapter(
+        private val icons: List<OverlayIcon>,
+        private val isSheet: Boolean,
+        private val onIconSelected: (OverlayIcon) -> Unit
+    ) : RecyclerView.Adapter<IconAdapter.ViewHolder>() {
+
+        inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+            val iconImage: ImageView = view.findViewById(R.id.itemIconImage)
+            val iconText: TextView = view.findViewById(R.id.itemIconText)
+            val cardView: com.google.android.material.card.MaterialCardView = view.findViewById(R.id.itemIconCard)
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val view = LayoutInflater.from(parent.context)
+                .inflate(R.layout.item_floating_icon, parent, false)
+            return ViewHolder(view)
+        }
+
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            val icon = icons[position]
+            val isMore = icon.name == OverlayIconRegistry.getMoreIcon().name
+            
+            holder.iconImage.setImageResource(icon.resId)
+            
+            if (isMore) {
+                holder.iconText.text = getString(R.string.floating_config_more)
+                holder.cardView.setCardBackgroundColor(getColor(R.color.colorSurfaceVariant))
+                holder.cardView.strokeWidth = 0
+                holder.iconImage.setColorFilter(getColor(R.color.colorPrimary))
+            } else {
+                val parts = icon.name.split("_", limit = 3)
+                val iconName = parts.getOrNull(2)?.replace("_", " ") ?: ""
+                holder.iconText.text = iconName
+                
+                if (selectedIconName == icon.name) {
+                    holder.cardView.strokeColor = getColor(R.color.colorPrimary)
+                    holder.cardView.strokeWidth = dpToPx(2)
+                } else {
+                    holder.cardView.strokeColor = getColor(R.color.colorSurfaceVariant)
+                    holder.cardView.strokeWidth = dpToPx(1)
+                }
+                holder.cardView.setCardBackgroundColor(getColor(R.color.colorSurface))
+                holder.iconImage.clearColorFilter()
+            }
+            
+            holder.itemView.setOnClickListener {
+                onIconSelected(icon)
+            }
+        }
+
+        override fun getItemCount() = icons.size
+    }
+}

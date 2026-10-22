@@ -1,0 +1,31 @@
+package io.github.kouzen.kzvolume.features.quicktile
+
+import android.media.AudioManager
+import android.service.quicksettings.Tile
+import android.service.quicksettings.TileService
+import io.github.kouzen.kzvolume.R
+
+class VolumePanelTileService : TileService() {
+
+    private val audioManager by lazy {
+        getSystemService(AUDIO_SERVICE) as AudioManager
+    }
+
+    override fun onStartListening() {
+        super.onStartListening()
+
+        qsTile?.apply {
+            label = getString(R.string.quick_tile_label)
+            state = Tile.STATE_ACTIVE
+            updateTile()
+        }
+    }
+
+    override fun onClick() {
+        super.onClick()
+
+        runCatching {
+            audioManager.adjustVolume(AudioManager.ADJUST_SAME, AudioManager.FLAG_SHOW_UI)
+        }
+    }
+}

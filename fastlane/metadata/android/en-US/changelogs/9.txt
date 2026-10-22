@@ -1,0 +1,9 @@
+v1.3.0 (Build 9)
+
+- Initial release of kzvolume
+- Interactive live media volume slider with percentage and mute toggle
+- Redesigned modern Material 3 interface with Inter typography
+- Customizable Floating Button with size, color, opacity, and orientation memory
+- Edge Swipe gesture volume trigger
+- Direct notification media volume controls (Vol -, Mute, Vol +)
+- Zero trackers, ad-free, 100% open-source

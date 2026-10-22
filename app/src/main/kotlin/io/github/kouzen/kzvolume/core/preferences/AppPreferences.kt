@@ -1,0 +1,234 @@
+package io.github.kouzen.kzvolume.core.preferences
+
+import android.content.Context
+import android.content.SharedPreferences
+import androidx.preference.PreferenceManager
+import io.github.kouzen.kzvolume.Constants
+
+object AppPreferences {
+
+    fun isEdgeConfigured(context: Context): Boolean {
+        val preferences = preferences(context)
+        migrateIfNeeded(preferences)
+        return getBooleanSafe(preferences, Constants.PREF_EDGE_CONFIGURED, false)
+    }
+
+    fun setEdgeConfigured(context: Context, configured: Boolean) {
+        val preferences = preferences(context)
+        migrateIfNeeded(preferences)
+        preferences.edit().putBoolean(Constants.PREF_EDGE_CONFIGURED, configured).apply()
+    }
+
+    fun getEdgeSelectedSide(context: Context): String {
+        val preferences = preferences(context)
+        migrateIfNeeded(preferences)
+        return getStringSafe(preferences, Constants.PREF_EDGE_SELECTED_SIDE, Constants.SIDE_RIGHT)
+    }
+
+    fun setEdgeSelectedSide(context: Context, side: String) {
+        val preferences = preferences(context)
+        migrateIfNeeded(preferences)
+        preferences.edit().putString(Constants.PREF_EDGE_SELECTED_SIDE, side).apply()
+    }
+
+    fun isEdgeEnabled(context: Context): Boolean {
+        val preferences = preferences(context)
+        migrateIfNeeded(preferences)
+        return getBooleanSafe(preferences, Constants.PREF_EDGE_ENABLED, false)
+    }
+
+    fun setEdgeEnabled(context: Context, enabled: Boolean) {
+        val preferences = preferences(context)
+        migrateIfNeeded(preferences)
+        preferences.edit().putBoolean(Constants.PREF_EDGE_ENABLED, enabled).apply()
+    }
+
+    fun isFloatingEnabled(context: Context): Boolean {
+        val preferences = preferences(context)
+        return getBooleanSafe(preferences, Constants.PREF_FLOATING_ENABLED, false)
+    }
+
+    fun setFloatingEnabled(context: Context, enabled: Boolean) {
+        val preferences = preferences(context)
+        preferences.edit().putBoolean(Constants.PREF_FLOATING_ENABLED, enabled).apply()
+    }
+
+    fun getFloatingPosition(context: Context, isLandscape: Boolean = false): Pair<Float, Float>? {
+        val preferences = preferences(context)
+
+        val useLandscape = isLandscape && isFloatingSeparatePositionsEnabled(context)
+
+        val xKey = if (useLandscape) Constants.PREF_FLOATING_LANDSCAPE_X else Constants.PREF_FLOATING_X
+        val yKey = if (useLandscape) Constants.PREF_FLOATING_LANDSCAPE_Y else Constants.PREF_FLOATING_Y
+
+        if (!preferences.contains(xKey) || !preferences.contains(yKey)) {
+            if (useLandscape) {
+                // Fallback to portrait position if landscape is not yet saved
+                return try {
+                    if (!preferences.contains(Constants.PREF_FLOATING_X) || !preferences.contains(Constants.PREF_FLOATING_Y)) {
+                        return null
+                    }
+                    val x = preferences.getFloat(Constants.PREF_FLOATING_X, 0.5f)
+                    val y = preferences.getFloat(Constants.PREF_FLOATING_Y, 0.5f)
+                    Pair(x, y)
+                } catch (e: ClassCastException) {
+                    null
+                }
+            }
+            return null
+        }
+
+        return try {
+            val x = preferences.getFloat(xKey, 0.5f)
+            val y = preferences.getFloat(yKey, 0.5f)
+            Pair(x, y)
+        } catch (e: ClassCastException) {
+            // Legacy Int values exist, return null to use default position and allow overwrite with Float on next save
+            null
+        }
+    }
+
+    fun setFloatingPosition(context: Context, x: Float, y: Float, isLandscape: Boolean = false) {
+        val preferences = preferences(context)
+        val useLandscape = isLandscape && isFloatingSeparatePositionsEnabled(context)
+
+        val xKey = if (useLandscape) Constants.PREF_FLOATING_LANDSCAPE_X else Constants.PREF_FLOATING_X
+        val yKey = if (useLandscape) Constants.PREF_FLOATING_LANDSCAPE_Y else Constants.PREF_FLOATING_Y
+
+        preferences.edit()
+            .putFloat(xKey, x)
+            .putFloat(yKey, y)
+            .apply()
+    }
+
+    fun getFloatingIconName(context: Context): String {
+        return getStringSafe(preferences(context), Constants.PREF_FLOATING_ICON_NAME, "ic_0_default")
+    }
+
+    fun setFloatingIconName(context: Context, name: String) {
+        preferences(context).edit().putString(Constants.PREF_FLOATING_ICON_NAME, name).apply()
+    }
+
+    fun getFloatingIconColor(context: Context): Int {
+        return getIntSafe(preferences(context), Constants.PREF_FLOATING_ICON_COLOR, 0)
+    }
+
+    fun setFloatingIconColor(context: Context, color: Int) {
+        preferences(context).edit().putInt(Constants.PREF_FLOATING_ICON_COLOR, color).apply()
+    }
+
+    private fun getFloatSafe(preferences: SharedPreferences, key: String, defaultValue: Float): Float {
+        return runCatching {
+            preferences.getFloat(key, defaultValue)
+        }.getOrDefault(defaultValue)
+    }
+
+    fun getFloatingOpacity(context: Context): Float {
+        return getFloatSafe(preferences(context), Constants.PREF_FLOATING_OPACITY, 1.0f)
+    }
+
+    fun setFloatingOpacity(context: Context, opacity: Float) {
+        preferences(context).edit().putFloat(Constants.PREF_FLOATING_OPACITY, opacity).apply()
+    }
+
+    fun getFloatingSizeDp(context: Context): Int {
+        return getIntSafe(preferences(context), Constants.PREF_FLOATING_SIZE, Constants.DEFAULT_FLOATING_SIZE_DP)
+    }
+
+    fun setFloatingSizeDp(context: Context, sizeDp: Int) {
+        preferences(context).edit().putInt(Constants.PREF_FLOATING_SIZE, sizeDp).apply()
+    }
+
+    fun isHapticEnabled(context: Context): Boolean {
+        return getBooleanSafe(preferences(context), Constants.PREF_HAPTIC_ENABLED, true)
+    }
+
+    fun setHapticEnabled(context: Context, enabled: Boolean) {
+        preferences(context).edit().putBoolean(Constants.PREF_HAPTIC_ENABLED, enabled).apply()
+    }
+
+    fun isFloatingSeparatePositionsEnabled(context: Context): Boolean {
+        // ponytail: separate portrait/landscape positions on by default; user can toggle off in config
+        return getBooleanSafe(preferences(context), Constants.PREF_FLOATING_SEPARATE_POSITIONS, true)
+    }
+
+    fun setFloatingSeparatePositionsEnabled(context: Context, enabled: Boolean) {
+        preferences(context).edit().putBoolean(Constants.PREF_FLOATING_SEPARATE_POSITIONS, enabled).apply()
+    }
+
+    fun isFloatingFixedPosition(context: Context): Boolean {
+        return getBooleanSafe(preferences(context), Constants.PREF_FLOATING_FIXED_POSITION, false)
+    }
+
+    fun setFloatingFixedPosition(context: Context, fixed: Boolean) {
+        preferences(context).edit().putBoolean(Constants.PREF_FLOATING_FIXED_POSITION, fixed).apply()
+    }
+
+    fun getNotificationDenialCount(context: Context): Int {
+        return getIntSafe(preferences(context), Constants.PREF_NOTIFICATION_DENIAL_COUNT, 0)
+    }
+
+    fun incrementNotificationDenialCount(context: Context) {
+        val preferences = preferences(context)
+        val newCount = getIntSafe(preferences, Constants.PREF_NOTIFICATION_DENIAL_COUNT, 0) + 1
+        preferences.edit().putInt(Constants.PREF_NOTIFICATION_DENIAL_COUNT, newCount).apply()
+    }
+
+    fun resetNotificationDenialCount(context: Context) {
+        preferences(context)
+            .edit()
+            .putInt(Constants.PREF_NOTIFICATION_DENIAL_COUNT, 0)
+            .apply()
+    }
+
+    fun ensureMigration(context: Context) {
+        migrateIfNeeded(preferences(context))
+    }
+
+    private fun preferences(context: Context): SharedPreferences {
+        return PreferenceManager.getDefaultSharedPreferences(context.applicationContext)
+    }
+
+    private fun migrateIfNeeded(preferences: SharedPreferences) {
+        val alreadyMigrated = getBooleanSafe(preferences, Constants.PREF_MIGRATION_COMPLETE, false)
+        if (alreadyMigrated) {
+            return
+        }
+
+        val legacyConfigured = getBooleanSafe(preferences, Constants.LEGACY_PREF_SETUP_COMPLETE, false)
+        val legacyEnabled = getBooleanSafe(preferences, Constants.LEGACY_PREF_SERVICE_ENABLED, false)
+        val legacySide = getStringSafe(preferences, Constants.LEGACY_PREF_SELECTED_SIDE, Constants.SIDE_RIGHT)
+
+        val editor = preferences.edit()
+        if (!preferences.contains(Constants.PREF_EDGE_CONFIGURED)) {
+            editor.putBoolean(Constants.PREF_EDGE_CONFIGURED, legacyConfigured)
+        }
+        if (!preferences.contains(Constants.PREF_EDGE_ENABLED)) {
+            editor.putBoolean(Constants.PREF_EDGE_ENABLED, legacyEnabled)
+        }
+        if (!preferences.contains(Constants.PREF_EDGE_SELECTED_SIDE)) {
+            editor.putString(Constants.PREF_EDGE_SELECTED_SIDE, legacySide)
+        }
+
+        editor.putBoolean(Constants.PREF_MIGRATION_COMPLETE, true)
+        editor.apply()
+    }
+
+    private fun getBooleanSafe(preferences: SharedPreferences, key: String, defaultValue: Boolean): Boolean {
+        return runCatching {
+            preferences.getBoolean(key, defaultValue)
+        }.getOrDefault(defaultValue)
+    }
+
+    private fun getIntSafe(preferences: SharedPreferences, key: String, defaultValue: Int): Int {
+        return runCatching {
+            preferences.getInt(key, defaultValue)
+        }.getOrDefault(defaultValue)
+    }
+
+    private fun getStringSafe(preferences: SharedPreferences, key: String, defaultValue: String): String {
+        return runCatching {
+            preferences.getString(key, defaultValue)
+        }.getOrNull() ?: defaultValue
+    }
+}

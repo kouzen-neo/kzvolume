@@ -1,0 +1,1 @@
+kzvolume helps you control your device volume when physical volume buttons are broken or unresponsive. Access Android system volume easily through floating button, edge swipe gestures, and quick settings tiles.
