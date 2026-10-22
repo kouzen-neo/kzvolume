@@ -35,6 +35,7 @@ class FeatureCardAdapter(
         fun bind(item: FeatureCardUiModel) {
             val (iconRes, configIconRes) = when (item.featureId) {
                 Constants.FEATURE_ID_FLOATING_BUTTON -> Pair(R.drawable.ic_volume_floating, R.drawable.ic_1_tune)
+                Constants.FEATURE_ID_FLOATING_POWER -> Pair(R.drawable.ic_power_settings, R.drawable.ic_1_tune)
                 Constants.FEATURE_ID_EDGE_SWIPE -> Pair(R.drawable.ic_volume_edge_swipe, R.drawable.ic_2_adjust)
                 Constants.FEATURE_ID_QUICK_TILE -> Pair(R.drawable.ic_quick_settings_tile, R.drawable.ic_1_tune)
                 else -> Pair(R.drawable.ic_volume_floating, R.drawable.ic_1_tune)

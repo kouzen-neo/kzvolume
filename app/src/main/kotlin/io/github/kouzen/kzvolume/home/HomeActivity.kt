@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.github.kouzen.kzvolume.Constants
 import io.github.kouzen.kzvolume.R
+import io.github.kouzen.kzvolume.core.accessibility.KZVolumeAccessibilityService
 import io.github.kouzen.kzvolume.core.block.FeatureAvailabilityEvaluator
 import io.github.kouzen.kzvolume.core.block.FeatureBlockResult
 import io.github.kouzen.kzvolume.core.feature.FeatureController
@@ -246,6 +247,12 @@ class HomeActivity : AppCompatActivity() {
                     }
                 }
 
+                spec.featureId == Constants.FEATURE_ID_FLOATING_POWER && !KZVolumeAccessibilityService.isRunning() -> {
+                    noticeText = "Accessibility service required to lock screen and open power menu."
+                    noticeActionText = "Enable in Settings"
+                    noticeAction = { openAccessibilitySettings() }
+                }
+
                 spec.supportsToggle && !configured -> {
                     noticeText = "Initial configuration required before enabling."
                     noticeActionText = "Setup Now"
@@ -289,6 +296,13 @@ class HomeActivity : AppCompatActivity() {
                 configButtonText = getString(spec.configActionRes)
             )
         }
+    }
+
+    private fun openAccessibilitySettings() {
+        val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        runCatching { startActivity(intent) }
     }
 
     private fun openNavigationSettings(context: Context) {
@@ -364,6 +378,10 @@ class HomeActivity : AppCompatActivity() {
                 handleConfigClick(featureId)
                 revertToggle(featureId)
                 return
+            }
+
+            if (featureId == Constants.FEATURE_ID_FLOATING_POWER && !KZVolumeAccessibilityService.isRunning()) {
+                openAccessibilitySettings()
             }
         }
 

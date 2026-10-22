@@ -147,6 +147,59 @@ object AppPreferences {
         preferences(context).edit().putBoolean(Constants.PREF_HAPTIC_ENABLED, enabled).apply()
     }
 
+    fun isFloatingPowerEnabled(context: Context): Boolean {
+        return getBooleanSafe(preferences(context), Constants.PREF_FLOATING_POWER_ENABLED, false)
+    }
+
+    fun setFloatingPowerEnabled(context: Context, enabled: Boolean) {
+        preferences(context).edit().putBoolean(Constants.PREF_FLOATING_POWER_ENABLED, enabled).apply()
+    }
+
+    fun getFloatingPowerPosition(context: Context, isLandscape: Boolean = false): Pair<Float, Float>? {
+        val preferences = preferences(context)
+        val useLandscape = isLandscape && isFloatingSeparatePositionsEnabled(context)
+
+        val xKey = if (useLandscape) Constants.PREF_FLOATING_POWER_LANDSCAPE_X else Constants.PREF_FLOATING_POWER_X
+        val yKey = if (useLandscape) Constants.PREF_FLOATING_POWER_LANDSCAPE_Y else Constants.PREF_FLOATING_POWER_Y
+
+        if (!preferences.contains(xKey) || !preferences.contains(yKey)) {
+            if (useLandscape) {
+                return try {
+                    if (!preferences.contains(Constants.PREF_FLOATING_POWER_X) || !preferences.contains(Constants.PREF_FLOATING_POWER_Y)) {
+                        return null
+                    }
+                    val x = preferences.getFloat(Constants.PREF_FLOATING_POWER_X, 1.0f)
+                    val y = preferences.getFloat(Constants.PREF_FLOATING_POWER_Y, 0.45f)
+                    Pair(x, y)
+                } catch (e: Exception) {
+                    null
+                }
+            }
+            return null
+        }
+
+        return try {
+            val x = preferences.getFloat(xKey, 1.0f)
+            val y = preferences.getFloat(yKey, 0.45f)
+            Pair(x, y)
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    fun setFloatingPowerPosition(context: Context, x: Float, y: Float, isLandscape: Boolean = false) {
+        val preferences = preferences(context)
+        val useLandscape = isLandscape && isFloatingSeparatePositionsEnabled(context)
+
+        val xKey = if (useLandscape) Constants.PREF_FLOATING_POWER_LANDSCAPE_X else Constants.PREF_FLOATING_POWER_X
+        val yKey = if (useLandscape) Constants.PREF_FLOATING_POWER_LANDSCAPE_Y else Constants.PREF_FLOATING_POWER_Y
+
+        preferences.edit()
+            .putFloat(xKey, x)
+            .putFloat(yKey, y)
+            .apply()
+    }
+
     fun isFloatingSeparatePositionsEnabled(context: Context): Boolean {
         // ponytail: separate portrait/landscape positions on by default; user can toggle off in config
         return getBooleanSafe(preferences(context), Constants.PREF_FLOATING_SEPARATE_POSITIONS, true)

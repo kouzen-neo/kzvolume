@@ -10,8 +10,9 @@ import io.github.kouzen.kzvolume.core.preferences.AppPreferences
 object FloatingButtonRuntime {
 
     fun sync(context: Context) {
-        val enabledByPref = AppPreferences.isFloatingEnabled(context)
-        if (!enabledByPref) {
+        val volumeEnabled = AppPreferences.isFloatingEnabled(context)
+        val powerEnabled = AppPreferences.isFloatingPowerEnabled(context)
+        if (!volumeEnabled && !powerEnabled) {
             stop(context)
             return
         }
@@ -23,8 +24,9 @@ object FloatingButtonRuntime {
         )
 
         if (missingPermissions.isNotEmpty()) {
-            // Permissions revoked, turn off the feature preference
+            // Permissions revoked, turn off the feature preferences
             AppPreferences.setFloatingEnabled(context, false)
+            AppPreferences.setFloatingPowerEnabled(context, false)
             stop(context)
             return
         }

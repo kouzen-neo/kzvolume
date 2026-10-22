@@ -2,6 +2,7 @@ package io.github.kouzen.kzvolume.core.feature
 
 import io.github.kouzen.kzvolume.features.edge.EdgeSwipeFeatureController
 import io.github.kouzen.kzvolume.features.floating.FloatingButtonFeatureController
+import io.github.kouzen.kzvolume.features.floating.FloatingPowerFeatureController
 import io.github.kouzen.kzvolume.features.quicktile.QuickSettingsFeatureController
 
 object FeatureRegistry {
@@ -9,6 +10,7 @@ object FeatureRegistry {
     private val orderedControllers = listOf(
         QuickSettingsFeatureController,
         FloatingButtonFeatureController,
+        FloatingPowerFeatureController,
         EdgeSwipeFeatureController
     ).sortedBy { it.spec.displayOrder }
 

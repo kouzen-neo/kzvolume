@@ -4,6 +4,7 @@ object Constants {
     const val FEATURE_ID_QUICK_TILE = "quick_tile"
     const val FEATURE_ID_EDGE_SWIPE = "edge_swipe"
     const val FEATURE_ID_FLOATING_BUTTON = "floating_button"
+    const val FEATURE_ID_FLOATING_POWER = "floating_power"
 
     const val EXTRA_FEATURE_ID = "extra_feature_id"
 
@@ -28,6 +29,13 @@ object Constants {
     const val PREF_FLOATING_SEPARATE_POSITIONS = "feature.floating.separate_positions"
     const val PREF_FLOATING_LANDSCAPE_X = "feature.floating.landscape_x"
     const val PREF_FLOATING_LANDSCAPE_Y = "feature.floating.landscape_y"
+
+    const val PREF_FLOATING_POWER_ENABLED = "feature.floating_power.enabled"
+    const val PREF_FLOATING_POWER_X = "feature.floating_power.x"
+    const val PREF_FLOATING_POWER_Y = "feature.floating_power.y"
+    const val PREF_FLOATING_POWER_LANDSCAPE_X = "feature.floating_power.landscape_x"
+    const val PREF_FLOATING_POWER_LANDSCAPE_Y = "feature.floating_power.landscape_y"
+
     const val PREF_HAPTIC_ENABLED = "feature.general.haptic_enabled"
 
     const val DEFAULT_FLOATING_SIZE_DP = 48

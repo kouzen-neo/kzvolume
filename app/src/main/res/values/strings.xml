@@ -15,6 +15,9 @@
     <string name="feature_floating_subtitle">On-screen movable volume button</string>
     <string name="feature_floating_description">On-screen movable volume button</string>
 
+    <string name="feature_floating_power_title">Floating Power Button</string>
+    <string name="feature_floating_power_subtitle">Tap to lock screen, hold for power menu</string>
+
     <string name="feature_edge_title">Edge Swipe</string>
     <string name="feature_edge_subtitle">Swipe inward from screen edge</string>
     <string name="feature_edge_description">Swipe inward from screen edge</string>
@@ -72,6 +75,7 @@
     <string name="floating_config_separate_positions_desc">Save different positions for portrait and landscape.</string>
 
     <!-- Notification -->
+    <string name="accessibility_service_description">Used by kzvolume to lock the screen and open the system power menu.</string>
     <string name="notification_channel_name">kzvolume edge swipe service</string>
     <string name="notification_channel_description">Keeps edge swipe detection active</string>
     <string name="notification_title">Edge Swipe Overlay is active</string>
