@@ -1,45 +1,100 @@
-<div id="top" align="center">
-
-# <img src="fastlane/metadata/android/en-US/images/icon.png" alt="kzvolume icon" width="48" height="48"> kzvolume
+# kzvolume
 
 [![GitHub Release](https://img.shields.io/github/v/release/kouzen-neo/kzvolume?style=for-the-badge&logo=github)](https://github.com/kouzen-neo/kzvolume/releases/latest)
 [![License](https://img.shields.io/github/license/kouzen-neo/kzvolume?style=for-the-badge&logo=apache)](LICENSE)
 
-**kzvolume** is a lightweight Android utility designed to restore volume controls on devices with broken or unresponsive physical volume buttons.
+kzvolume is a lightweight Android utility designed to restore on-screen volume controls on devices with broken, worn out, or unresponsive physical volume buttons.
 
-Access volume controls anywhere via an on-screen **Floating Button**, **Edge Swipe Gestures**, **Notification Actions**, or a **Quick Settings Tile**.
-
-</div>
+Provides system volume access via an on-screen Floating Button, Edge Swipe gestures, persistent Notification Actions, and a Quick Settings Tile.
 
 ---
 
 ## Features
 
-- **🔘 Floating Button**: Movable on-screen trigger with custom icons, size (36dp–64dp), colors, opacity, and independent portrait/landscape memory.
-- **↔️ Edge Swipe Gestures**: Swipe inward from your preferred screen edge (left or right) to trigger the system volume panel.
-- **🔊 Live Volume Dashboard**: Interactive media volume card with slider, volume down/up, and instant mute toggle.
-- **🔔 Notification Controls**: Adjust volume or toggle mute directly from your notification drawer and lock screen.
-- **🚀 Quick Settings Tile**: Native tile for instant volume access from anywhere.
-- **🎨 Material 3 & Inter Font**: Expressive design with typography matching the kzkt family.
-- **🔒 Privacy-First**: 100% open-source, no analytics, no ads, no trackers, and zero network calls.
+- **Floating Button**: On-screen overlay button with configurable size (36dp to 64dp), opacity, custom icons, and independent portrait and landscape position memory.
+- **Edge Swipe**: Trigger native volume dialog with an inward swipe from the left or right edge of the display.
+- **Media Volume Card**: Live volume level indicator, slider, increment/decrement steps, and instant mute toggle.
+- **Notification Controls**: Volume adjustment (Vol -, Mute, Vol +) directly from status bar and lock screen.
+- **Quick Settings Tile**: Fast access tile located directly inside the notification shade.
+- **Material 3 Design**: Clean interface styled with Inter typography and adaptive system colors.
+- **Privacy First**: Zero trackers, no analytics, no network requests, and 100% open-source under Apache-2.0.
+
+---
+
+## Project Structure
+
+```
+kzvolume/
+├── app/
+│   ├── src/main/
+│   │   ├── AndroidManifest.xml
+│   │   ├── kotlin/io/github/kouzen/kzvolume/
+│   │   │   ├── core/
+│   │   │   │   ├── block/         # Feature availability conditions & evaluation
+│   │   │   │   ├── feature/       # Feature registration, specs, and controllers
+│   │   │   │   ├── permission/    # Overlay and notification permission policy
+│   │   │   │   └── preferences/   # Local persistent state via SharedPreferences
+│   │   │   ├── features/
+│   │   │   │   ├── edge/          # Edge swipe detection and gesture overlay service
+│   │   │   │   ├── floating/      # Movable overlay button and config activity
+│   │   │   │   └── quicktile/     # Quick Settings Tile implementation
+│   │   │   ├── home/              # Main dashboard activity and UI adapters
+│   │   │   ├── permission/        # Permission hub and onboarding activities
+│   │   │   ├── BootReceiver.kt    # Automatic service restoration on reboot
+│   │   │   ├── Constants.kt       # Global constants, keys, and identifiers
+│   │   │   └── KZVolumeApp.kt     # Application class with Dynamic Colors
+│   │   └── res/
+│   │       ├── drawable/          # Vector drawables and UI assets
+│   │       ├── font/              # Inter font family definitions
+│   │       ├── layout/            # Activity and dialog layouts
+│   │       ├── mipmap-*/          # Adaptive application launcher icons
+│   │       └── values/            # Theme, color tokens, and string definitions
+│   ├── build.gradle.kts           # Application build config and ABI splits
+│   └── proguard-rules.pro         # Minification and R8 optimization rules
+├── docs/
+│   └── privacy-policy.md          # Privacy policy and permissions disclosure
+├── fastlane/                      # App metadata and release descriptions
+├── gradle/
+│   └── libs.versions.toml         # Version catalog for dependencies and plugins
+├── .github/workflows/
+│   ├── debug-build.yml            # CI validation on pull requests
+│   └── release-build.yml          # Automated multi-ABI APK build and GitHub release
+├── CHANGELOG.md                   # Chronological project history
+├── CONTRIBUTING.md                # Contribution workflow
+├── LICENSE                        # Apache License 2.0
+├── README.md                      # Project documentation
+└── settings.gradle.kts            # Project settings and plugin repositories
+```
 
 ---
 
 ## Downloads
 
-Download the latest APK for your device architecture from [GitHub Releases](https://github.com/kouzen-neo/kzvolume/releases/latest):
-- `kzvolume-arm64-v8a.apk` (modern 64-bit devices)
-- `kzvolume-armeabi-v7a.apk` (legacy 32-bit devices)
-- `kzvolume-universal.apk` (all architectures)
+Compiled APKs for various architectures are available under [GitHub Releases](https://github.com/kouzen-neo/kzvolume/releases/latest):
+
+| File | Target Architecture |
+|---|---|
+| `kzvolume-arm64-v8a.apk` | Modern 64-bit ARM devices (recommended) |
+| `kzvolume-armeabi-v7a.apk` | Legacy 32-bit ARM devices |
+| `kzvolume-universal.apk` | Universal package supporting all platforms |
 
 ---
 
-## Tech Stack
+## Build Requirements
 
-- **Language**: Kotlin 2.1
-- **Target SDK**: Android 15 (API 35+) / minSdk 29 (Android 10+)
-- **Build System**: Gradle 9 with Version Catalogs (`libs.versions.toml`)
-- **Optimization**: R8 Full Mode minification and resource shrinking
+- Android SDK 35+ (build-tools 36.0.0+)
+- JDK 17
+- Gradle 9.x (via included wrapper `./gradlew`)
+
+To build locally:
+
+```bash
+# Debug build
+./gradlew assembleDebug
+
+# Release build (splits)
+./gradlew assembleRelease
+```
 
 ---
 
