@@ -5,8 +5,8 @@ plugins {
 val appId = "io.github.kouzen.kzvolume"
 
 // VERSIONING
-val appVersionName = "1.3.0"
-val appVersionCode = 9
+val appVersionName = "1.4.0"
+val appVersionCode = 10
 
 // Extract versions from appVersionName
 val versionParts = appVersionName.split(".")

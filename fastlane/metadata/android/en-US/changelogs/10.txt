@@ -1,0 +1,7 @@
+v1.4.0 (Build 10)
+
+- Added dedicated Floating Power Button
+- Single tap locks the screen
+- Hold or double tap opens system power / restart menu
+- Added multi-ABI APK releases (arm64-v8a, armeabi-v7a, universal)
+- Performance and stability improvements
